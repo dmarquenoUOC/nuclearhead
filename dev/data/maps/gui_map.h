@@ -7,7 +7,7 @@
  Info:
    Section       : 
    Bank          : 0
-   Map size      : 20 x 3
+   Map size      : 20 x 2
    Tile set      : C:\Users\David\Documents\GitHub\nuclearhead\res\tiles\gui_tileset.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
@@ -19,7 +19,7 @@
 */
 
 #define gui_mapWidth 20
-#define gui_mapHeight 3
+#define gui_mapHeight 2
 #define gui_mapBank 2
 
 extern unsigned char gui_map[];

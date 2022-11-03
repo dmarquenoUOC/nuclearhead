@@ -2,15 +2,13 @@
 // TFG UOC Videojocs
 #include <gb/gb.h>
 #include <gb/hardware.h>
-#include <stdio.h>
 
-// Data files
 // Tiles
-#include "data/tiles/bkg_tileset.c"
-#include "data/tiles/gui_tileset.c"
+#include "data/tiles/bkg_tileset.h"
+#include "data/tiles/gui_tileset.h"
 // Maps
-#include "data/maps/bkg_map.c"
-#include "data/maps/gui_map.c"
+#include "data/maps/bkg_map.h"
+#include "data/maps/gui_map.h"
 
 //Variables
 UBYTE bkg_x;
