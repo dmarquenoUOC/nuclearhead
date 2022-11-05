@@ -7,7 +7,7 @@
 // Tiles
 #include "data/tiles/bkg_tileset.h"
 #include "data/tiles/pg_idle_tileset.h"
-#include "data/tiles/abc_tileset.h"
+#include "data/tiles/title_tileset.h"
 //#include "data/tiles/gui_tileset.h"
 // Maps
 #include "data/maps/bkg_map.h"
@@ -18,6 +18,7 @@
 #define TITLE_ST            0U
 #define STORY_ST            1U
 #define GAME_ST             2U
+#define LIGHT_TRANS_DUR     8U
 
 // estructura basica de un personaje, id, posicion, grafico
 typedef struct {
@@ -49,23 +50,31 @@ void init_game_var();
 void init_game_sprites();
 void init_pg_sprite();
 void read_joypad();
-//void init_game_gui();
+void lights_out_transition();
+void lights_in_transition();
+void lights_transition_phase(UBYTE transition_phase);
 
 
 void main() {
 
-    //while (1) {
-        //title();
+    while (1) {
+        title();
         //story();
         game();
-    //}
+    }
 }
 
 void title(){
+    
     init_title();
     while (game_state == TITLE_ST) {
+        read_joypad();
+        if (cur_joypad & J_START) { // A key down
+            game_state = GAME_ST;
+        }   
         wait_vbl_done();
     }
+    lights_out_transition();
 
 }
 
@@ -78,15 +87,16 @@ void init_title(){
     DISPLAY_ON;
     enable_interrupts();
     wait_vbl_done();
+    lights_in_transition();
 
 }
 
 void init_title_bkg() {
     HIDE_BKG;
-    SWITCH_ROM_MBC1(abc_tilesetBank);
-    set_bkg_data(0, 48, abc_tileset);
+    SWITCH_ROM_MBC1(title_tilesetBank);
+    set_bkg_data(0, 48, title_tileset);
     SWITCH_ROM_MBC1(title_mapBank);
-    set_bkg_tiles(0, 0, title_mapWidth, title_mapHeight, title_mapBank);
+    set_bkg_tiles(0, 0, title_mapWidth, title_mapHeight, title_map);
     move_bkg(0, 0);
     SHOW_BKG;
 }
@@ -97,6 +107,7 @@ void story(){
     while (game_state == STORY_ST) {
         wait_vbl_done();
     }
+    lights_out_transition();
 
 }
 
@@ -110,6 +121,7 @@ void game() {
     while (game_state == GAME_ST) {
         wait_vbl_done();
     }
+    lights_out_transition();
         
 }
 
@@ -124,6 +136,7 @@ void init_game() {
     DISPLAY_ON;
     enable_interrupts();
     wait_vbl_done();
+    lights_in_transition();
 
 }
 
@@ -181,6 +194,56 @@ void init_pg_sprite(){
 void read_joypad() {
     pre_joypad = cur_joypad;
     cur_joypad = joypad();
+}
+
+void lights_out_transition() {
+    UBYTE transition_phase;
+    UBYTE transition_phase_t;
+    transition_phase = 0;
+    transition_phase_t = 0;
+    while (transition_phase != 4) {
+        lights_transition_phase(transition_phase);
+        if (transition_phase_t++ == LIGHT_TRANS_DUR) {
+            transition_phase_t = 0;
+            transition_phase++;
+        }
+        wait_vbl_done();
+    }
+}
+
+void lights_in_transition() {
+    UBYTE transition_phase;
+    UBYTE transition_phase_t;
+    transition_phase = 3;
+    transition_phase_t = 0;
+    while (transition_phase != 255) {
+        lights_transition_phase(transition_phase);
+        if (transition_phase_t++ == LIGHT_TRANS_DUR) {
+            transition_phase_t = 0;
+            transition_phase--;
+        }
+        wait_vbl_done();
+    }
+}
+
+void lights_transition_phase(UBYTE transition_phase) {
+    if (transition_phase == 0) {
+        BGP_REG = 0xE4;
+        OBP0_REG = 0xE4;
+        OBP1_REG = 0x1E;
+    } else if (transition_phase == 1) {
+        BGP_REG = 0x90;
+        OBP0_REG = 0x90;
+        OBP1_REG = 0x09;
+    } else if (transition_phase == 2) {
+        BGP_REG = 0x40;
+        OBP0_REG = 0x40;
+        OBP1_REG = 0x04;
+    } else {
+        BGP_REG = 0x00;
+        OBP0_REG = 0x00;
+        OBP1_REG = 0x00;        
+    }
 }
 
 /*
