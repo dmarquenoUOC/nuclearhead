@@ -7,7 +7,7 @@ _STATE(StateGame)\
 STATE_DEF_END
 
 #define SPRITES \
-_SPRITE_DMG(SpritePlayer, pg_idle_tileset)\
+_SPRITE_DMG(SpritePlayer, player_idle_tileset)\
 SPRITE_DEF_END
 
 #include "ZGBMain_Init.h"
