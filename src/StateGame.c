@@ -5,7 +5,8 @@
 #include "SpriteManager.h"
 
 IMPORT_MAP(stage_0_1);
-const UINT8 collision_tiles_1[] = {4, 5, 0};
+const UINT8 collision_tiles_1[] = {4, 5, 7, 8, 0};
+INT8 load_next = 0;
 
 void START() {
 
