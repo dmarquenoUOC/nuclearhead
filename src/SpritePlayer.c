@@ -13,17 +13,17 @@ const UINT8 anim_fall[]       = {1, 7};
 
 typedef enum  {
 	PLAYER_STATE_NORMAL,
-	PLAYER_STATE_JUMPING
+	PLAYER_STATE_JUMPING,
+	PLAYER_STATE_FALLING
 } PLAYER_STATE;
 
 
 PLAYER_STATE player_state;
 INT16 player_accel_y; // y acceleration
-INT16 max_accel = 60; //maximum acceleration possible
+INT16 current_height; // Current height
 INT8 tile_collision_x; //to check if we are touching a tile
 INT8 tile_collision_y; //to check if we are touching a tile
 UINT8 groundCollision; //to check if we are touching the ground.
-UINT8 isjumping; //to check if we are jumping
 UINT8 jumpPeak; //to check if we are in the jump Peak
 
 void START() {
@@ -31,8 +31,8 @@ void START() {
 	player_state=PLAYER_STATE_NORMAL;
 	player_accel_y = 0;
 	jumpPeak = 0;
-	isjumping=0;
 	groundCollision=0;
+	current_height = THIS->y;
 }
 
 
@@ -45,51 +45,67 @@ void MovePlayer() {
 		tile_collision_x = TranslateSprite(THIS, -1 << delta_time, 0);
 		THIS->mirror = V_MIRROR;
 	}
+
+	tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
 }
 
 
 void UpdateWalk() {
 
-	MovePlayer();
-
+	//Check idle anim or walk
 	if(KEY_PRESSED(J_RIGHT) || KEY_PRESSED(J_LEFT) ) {
 		SetSpriteAnim(THIS, anim_walk, 15u);
 	} else {
 		SetSpriteAnim(THIS, anim_idle, 3u);
 	}
 
+	//Check Jumping
 	if(KEY_TICKED(J_A)){
 		player_state=PLAYER_STATE_JUMPING;
-		player_accel_y = -50;
-		isjumping = 1;
-		SetSpriteAnim(THIS, anim_jump, 33u);
+		player_accel_y = -60;
 	} 
 
-	//Check if falling
-	//if ((player_accel_y >> 4) > 1) {
-	//	player_state = PLAYER_STATE_NORMAL;
-	//}
+	//Check falling
+	if ((player_accel_y >> 4) > 1) {
+		player_state = PLAYER_STATE_FALLING;
+	}
 
 }
 
-void UpdateJump() {
+void updateAcceleration(){
 
-	tile_collision_y = TranslateSprite(THIS, 0, (player_accel_y >> 4));
-
-	isjumping = 1;
-
-	if (tile_collision_y!=0){
-		jumpPeak = 1;
-		SetSpriteAnim(THIS, anim_fall, 33u);
-	}
-
-	if (jumpPeak == 0 && KEY_PRESSED(J_A) && player_accel_y > -35) {
-    	player_accel_y -= 2;
-	}else if (player_accel_y < 30) { //do another iteration 
+	
+	if (player_accel_y < 60) { 
         player_accel_y += 2;
+	}else if (KEY_PRESSED(J_A) && player_accel_y > -60) {
+    	player_accel_y -= 2;
 	}
 
-	MovePlayer();
+	//Check collision with floor or Top	
+	if (!tile_collision_y && delta_time != 0 && player_accel_y < 60)
+	{ //Do another iteration if there is no collision
+		player_accel_y += 2;
+		tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
+	}
+	if (tile_collision_y!=0){
+
+		player_accel_y = 0;
+
+		if (player_state == PLAYER_STATE_JUMPING)
+		{
+			player_state = PLAYER_STATE_FALLING;
+
+		}else if (player_state == PLAYER_STATE_FALLING)
+		{
+			player_state = PLAYER_STATE_NORMAL;
+		}
+
+	}else{
+
+		if (player_accel_y>0 && player_state == PLAYER_STATE_JUMPING){
+			player_state = PLAYER_STATE_FALLING;
+		}
+	}	
 
 }
 
@@ -100,29 +116,16 @@ void UPDATE() {
 			UpdateWalk();
 		break;
 		case (PLAYER_STATE_JUMPING):
-			UpdateJump();
+			SetSpriteAnim(THIS, anim_jump, 33u);
+		break;
+		case PLAYER_STATE_FALLING:
+			SetSpriteAnim(THIS, anim_fall, 33u);
 		break;
 	}
 
-	if (player_accel_y > 0) {
-			groundCollision = tile_collision_y;
+	MovePlayer();
+	updateAcceleration();
 
-			if (groundCollision == 0) {
-				player_state = PLAYER_STATE_JUMPING;
-				isjumping = 1;
-			}
-			else {
-				if (player_state == PLAYER_STATE_JUMPING) {
-					player_state = PLAYER_STATE_NORMAL;
-					isjumping=0;
-				}
-				player_accel_y = 0;
-			}
-	}
-	else {
-		groundCollision = 0;
-		player_state == PLAYER_STATE_JUMPING;
-	}
 }
 
 void DESTROY() {
