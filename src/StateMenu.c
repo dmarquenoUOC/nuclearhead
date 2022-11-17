@@ -5,10 +5,10 @@
 #include "SpriteManager.h"
 #include "Keys.h"
 
-IMPORT_MAP(title_map);
+IMPORT_MAP(title_nuc_map);
 
 void START() {
-	InitScroll(BANK(title_map), &title_map, 0, 0);
+	InitScroll(BANK(title_nuc_map), &title_nuc_map, 0, 0);
 }
 
 void UPDATE() {
