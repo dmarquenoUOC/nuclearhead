@@ -3,6 +3,7 @@
 
 #define STATES \
 _STATE(StateMenu)\
+_STATE(StateStory)\
 _STATE(StateGame)\
 STATE_DEF_END
 

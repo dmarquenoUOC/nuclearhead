@@ -14,7 +14,7 @@ void START() {
 void UPDATE() {
 
     if(KEY_TICKED(J_START)) {
-            SetState(StateGame);
+            SetState(StateStory);
     }
 
 }
