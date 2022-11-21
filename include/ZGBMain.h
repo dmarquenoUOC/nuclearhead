@@ -10,6 +10,8 @@ STATE_DEF_END
 #define SPRITES \
 _SPRITE_DMG(SpritePlayer, player_tileset)\
 _SPRITE_DMG(SpritePlayerNuclear, player_nuc_tileset)\
+_SPRITE_DMG(SpriteStone, stone_tileset)\
+_SPRITE_DMG(SpriteLimits, limits_tileset)\
 SPRITE_DEF_END
 
 #include "ZGBMain_Init.h"
