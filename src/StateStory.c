@@ -22,7 +22,7 @@ void START() {
 
 void UPDATE() {
 
-	if(KEY_TICKED(J_A)) {
+	if(KEY_TICKED(J_START)) {
             SetState(StateGame);
     }
 

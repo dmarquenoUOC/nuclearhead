@@ -7,6 +7,7 @@
 //PG animations
 const UINT8 anim_idle_nuc[]       = {2, 0, 1};
 const UINT8 anim_walk_nuc[]       = {4, 3, 4, 5, 4};
+const UINT8 anim_beat_nuc[]       = {1, 2};
 
 typedef enum  {
 	PLAYER_STATE_NUCLEAR,
@@ -33,12 +34,14 @@ void START() {
 
 void MovePlayerNuc() {
 
-	if(KEY_PRESSED(J_RIGHT)) {
-		tile_collision_nuc = TranslateSprite(THIS, 1 << delta_time, 0);
-		THIS->mirror = NO_MIRROR;
-	} else if(KEY_PRESSED(J_LEFT)) {
-		tile_collision_nuc = TranslateSprite(THIS, -1 << delta_time, 0);
-		THIS->mirror = V_MIRROR;
+	if (!(KEY_PRESSED(J_A))) {
+		if(KEY_PRESSED(J_RIGHT)) {
+			tile_collision_nuc = TranslateSprite(THIS, 1 << delta_time, 0);
+			THIS->mirror = NO_MIRROR;
+		} else if(KEY_PRESSED(J_LEFT)) {
+			tile_collision_nuc = TranslateSprite(THIS, -1 << delta_time, 0);
+			THIS->mirror = V_MIRROR;
+		}
 	}
 
 }
@@ -52,6 +55,14 @@ void UpdateWalkNuc() {
 	} else {
 		SetSpriteAnim(THIS, anim_idle_nuc, 3u);
 	}
+}
+
+void UpdateBeat(){
+
+	if (KEY_PRESSED(J_A)){
+		SetSpriteAnim(THIS, anim_beat_nuc, 3u);
+	}
+
 }
 
 void CheckNormal(){
@@ -70,9 +81,8 @@ void UPDATE() {
 			UpdateWalkNuc();
 		break;
 	}
-
+	UpdateBeat();
 	MovePlayerNuc();
-
 	CheckNormal();
 
 }
