@@ -4,9 +4,10 @@
 #include "Scroll.h"
 #include "SpriteManager.h"
 #include "Sprite.h"
+#include "Print.h"
 
 IMPORT_MAP(stage_0_1);
-const UINT8 collision_tiles_1[] = {4, 5, 7, 8, 16,17,18,19,20,21,22,23,0};
+const UINT8 collision_tiles_1[] = {4, 5, 7, 8, 16,17,18,19,20,21,44,45,46,0};
 
 typedef enum  {
 	NORMAL_MODE,
@@ -24,7 +25,6 @@ Sprite *stone1;
 void START() {
 
 	scroll_target = SpriteManagerAdd(SpritePlayer, 8, 96);
-	stone1 = SpriteManagerAdd(SpriteStone, 112, 96);
 	InitScroll(BANK(stage_0_1), &stage_0_1, collision_tiles_1, 0);
 	current_mode=NORMAL_MODE;
 	previous_mode=NORMAL_MODE;
@@ -54,6 +54,11 @@ void UPDATE() {
 	    previous_mode=NORMAL_MODE;
 		
 	}
+
+	if (scroll_x==80){
+		stone1 = SpriteManagerAdd(SpriteStone, scroll_x+160, 80);	
+	}
+	
 
 
 }

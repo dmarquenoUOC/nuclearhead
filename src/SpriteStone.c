@@ -3,7 +3,7 @@
 #include "SpriteManager.h"
 
 //PG animations
-const UINT8 anim_idle_stone[]       = {1, 2};
+const UINT8 anim_idle_stone[]= {1, 1};
 
 
 void START() {

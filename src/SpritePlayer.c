@@ -1,6 +1,6 @@
 #include "Banks/SetAutoBank.h"
 #include "main.h"
-
+#include "ZGBMain.h"
 #include "Keys.h"
 #include "SpriteManager.h"
 
@@ -26,6 +26,8 @@ PLAYER_STATE player_state;
 INT16 player_accel_y; // y acceleration
 INT8 tile_collision_x; //to check if we are touching a tile
 INT8 tile_collision_y; //to check if we are touching a tile
+INT8 stop_r;
+INT8 stop_l;
 
 extern PLAYER_MODE current_mode;
 extern PLAYER_MODE previous_mode;
@@ -36,15 +38,17 @@ void START() {
 	player_accel_y = 0;
 	current_mode=NORMAL_MODE;
 	previous_mode=NORMAL_MODE;
+	stop_r=0;
+	stop_l=0;
 }
 
 
 void MovePlayer() {
 
-	if(KEY_PRESSED(J_RIGHT)) {
+	if(KEY_PRESSED(J_RIGHT) && stop_r==0) {
 		tile_collision_x = TranslateSprite(THIS, 1 << delta_time, 0);
 		THIS->mirror = NO_MIRROR;
-	} else if(KEY_PRESSED(J_LEFT)) {
+	} else if(KEY_PRESSED(J_LEFT) && stop_l==0) {
 		tile_collision_x = TranslateSprite(THIS, -1 << delta_time, 0);
 		THIS->mirror = V_MIRROR;
 	}
@@ -126,6 +130,9 @@ void CheckNuclear(){
 
 void UPDATE() {
 
+	UINT8 i;
+    Sprite *spr;
+
 	switch(player_state){
 		case(PLAYER_STATE_NORMAL):
 			UpdateWalk();
@@ -141,6 +148,27 @@ void UPDATE() {
 	MovePlayer();
 	updateAcceleration();
 	CheckNuclear();
+
+	//Check Sprites
+	SPRITEMANAGER_ITERATE(i, spr) {
+
+		//stop if touch Stone
+		if (spr->type == SpriteStone) {
+            if (CheckCollision(THIS, spr)) {
+				if (KEY_PRESSED(J_RIGHT)){
+					stop_r=1; // stop to right
+					stop_l=0; // move to left	
+				}else if (KEY_PRESSED(J_LEFT)){
+					stop_r=0; // move to right
+					stop_l=1; // stop to left
+				}
+            }else{
+				stop_r=0; // move to right
+				stop_l=0; // move to left
+			} 
+        }
+
+	}
 
 }
 
