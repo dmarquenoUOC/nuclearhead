@@ -55,8 +55,8 @@ void UPDATE() {
 		
 	}
 
-	if (scroll_x==80){
-		stone1 = SpriteManagerAdd(SpriteStone, scroll_x+160, 80);	
+	if (scroll_x==80 && !stone1){		
+		stone1 = SpriteManagerAdd(SpriteStone, scroll_x+160, 80);
 	}
 	
 

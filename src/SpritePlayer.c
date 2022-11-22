@@ -13,14 +13,13 @@ const UINT8 anim_fall[]       = {1, 7};
 typedef enum  {
 	PLAYER_STATE_NORMAL,
 	PLAYER_STATE_JUMPING,
-	PLAYER_STATE_FALLING,
+	PLAYER_STATE_FALLING
 } PLAYER_STATE;
 
 typedef enum  {
 	NORMAL_MODE,
 	NUCLEAR_MODE
 } PLAYER_MODE;
-
 
 PLAYER_STATE player_state;
 INT16 player_accel_y; // y acceleration
@@ -83,7 +82,6 @@ void UpdateWalk() {
 }
 
 void updateAcceleration(){
-
 	
 	if (player_accel_y < 35) { 
         player_accel_y += 2;
@@ -115,13 +113,14 @@ void updateAcceleration(){
 		if (player_accel_y>15 && player_state == PLAYER_STATE_JUMPING){
 			player_state = PLAYER_STATE_FALLING;
 		}
-	}	
+	}
 
+	
 }
 
 void CheckNuclear(){
 
-	if(KEY_PRESSED(J_B) || KEY_TICKED(J_B) ){
+	if((KEY_PRESSED(J_B) || KEY_TICKED(J_B)) &&  player_state==PLAYER_STATE_NORMAL){
 		current_mode=NUCLEAR_MODE;
 		previous_mode=NORMAL_MODE;
 	}	 
