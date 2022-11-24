@@ -21,7 +21,13 @@ typedef enum  {
 	NUCLEAR_MODE
 } PLAYER_MODE;
 
+typedef enum  {
+	GROUNDED,
+	INAIR
+} MOVE_STATE;
+
 PLAYER_STATE player_state;
+MOVE_STATE move_state;
 INT16 player_accel_y; // y acceleration
 INT8 tile_collision_x; //to check if we are touching a tile
 INT8 tile_collision_y; //to check if we are touching a tile
@@ -39,17 +45,22 @@ void START() {
 	previous_mode=NORMAL_MODE;
 	stop_r=0;
 	stop_l=0;
+	if (THIS->y<96){
+		move_state=INAIR;
+	}else move_state=GROUNDED;
 }
 
 
 void MovePlayer() {
 
-	if(KEY_PRESSED(J_RIGHT) && stop_r==0) {
-		tile_collision_x = TranslateSprite(THIS, 1 << delta_time, 0);
-		THIS->mirror = NO_MIRROR;
-	} else if(KEY_PRESSED(J_LEFT) && stop_l==0) {
-		tile_collision_x = TranslateSprite(THIS, -1 << delta_time, 0);
-		THIS->mirror = V_MIRROR;
+	if (!(KEY_PRESSED(J_B))) {
+		if(KEY_PRESSED(J_RIGHT) && stop_r==0) {
+			tile_collision_x = TranslateSprite(THIS, 1 << delta_time, 0);
+			THIS->mirror = NO_MIRROR;
+		} else if(KEY_PRESSED(J_LEFT) && stop_l==0) {
+			tile_collision_x = TranslateSprite(THIS, -1 << delta_time, 0);
+			THIS->mirror = V_MIRROR;
+		}
 	}
 
 	tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
@@ -58,8 +69,9 @@ void MovePlayer() {
 
 void UpdateWalk() {
 
+
 	//Check idle anim or walk
-	if(KEY_PRESSED(J_RIGHT) || KEY_PRESSED(J_LEFT) ) {
+	if((KEY_PRESSED(J_RIGHT) || KEY_PRESSED(J_LEFT)) && !(KEY_PRESSED(J_B))) {
 		SetSpriteAnim(THIS, anim_walk, 15u);
 	} else {
 		SetSpriteAnim(THIS, anim_idle, 3u);
@@ -118,9 +130,31 @@ void updateAcceleration(){
 	
 }
 
+void checkGorundedN(){
+
+	//Check collision with floor
+	if (move_state==INAIR && player_accel_y < 35)
+	{ //Do another iteration if there is no collision
+		player_accel_y += 2;
+		tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
+	}
+	if (tile_collision_y!=0){
+
+		player_accel_y = 0;
+		move_state==GROUNDED;
+
+	}
+
+	if (THIS->y<96){
+		move_state=INAIR;
+	}else move_state=GROUNDED;
+
+
+}
+
 void CheckNuclear(){
 
-	if((KEY_PRESSED(J_B) || KEY_TICKED(J_B)) &&  player_state==PLAYER_STATE_NORMAL){
+	if(KEY_PRESSED(J_B) &&  player_state==PLAYER_STATE_NORMAL){
 		current_mode=NUCLEAR_MODE;
 		previous_mode=NORMAL_MODE;
 	}	 
@@ -146,6 +180,7 @@ void UPDATE() {
 
 	MovePlayer();
 	updateAcceleration();
+	//checkGorundedN();
 	CheckNuclear();
 
 	//Check Sprites
