@@ -133,16 +133,17 @@ void updateAcceleration(){
 void checkGorundedN(){
 
 	//Check collision with floor
-	if (move_state==INAIR && player_accel_y < 35)
-	{ //Do another iteration if there is no collision
-		player_accel_y += 2;
-		tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
-	}
-	if (tile_collision_y!=0){
-
-		player_accel_y = 0;
-		move_state==GROUNDED;
-
+	if (player_state == PLAYER_STATE_NORMAL){
+		
+		if (move_state==INAIR && player_accel_y < 35)
+		{ //Do another iteration if there is no collision
+			//player_accel_y += 2;
+			tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
+		}
+		if (tile_collision_y!=0){
+			player_accel_y = 0;
+			move_state==GROUNDED;
+		}
 	}
 
 	if (THIS->y<96){
@@ -154,7 +155,7 @@ void checkGorundedN(){
 
 void CheckNuclear(){
 
-	if(KEY_PRESSED(J_B) &&  player_state==PLAYER_STATE_NORMAL){
+	if((KEY_PRESSED(J_B) || KEY_TICKED(J_B)) &&  player_state==PLAYER_STATE_NORMAL){
 		current_mode=NUCLEAR_MODE;
 		previous_mode=NORMAL_MODE;
 	}	 
@@ -180,7 +181,7 @@ void UPDATE() {
 
 	MovePlayer();
 	updateAcceleration();
-	//checkGorundedN();
+	checkGorundedN();
 	CheckNuclear();
 
 	//Check Sprites

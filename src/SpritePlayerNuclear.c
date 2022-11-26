@@ -110,7 +110,7 @@ void UpdateBeat(){
 
 void CheckNormal(){
 
-	if(KEY_PRESSED(J_B)){
+	if(KEY_PRESSED(J_B) || KEY_TICKED(J_B)){
 		current_mode=NORMAL_MODE;
 		previous_mode=NUCLEAR_MODE;
 	}	 
@@ -147,7 +147,6 @@ void UPDATE() {
 					stop_nuc_l=1; // stop to left
 				}else if (KEY_PRESSED(J_A)){
 					stone1status=1;
-					//SpriteManagerRemove(i);
 					stop_nuc_r=0; // move to right
 					stop_nuc_l=0; // move to left
 				}
