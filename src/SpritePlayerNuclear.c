@@ -8,6 +8,7 @@
 const UINT8 anim_idle_nuc[]       = {2, 0, 1};
 const UINT8 anim_walk_nuc[]       = {4, 3, 4, 5, 4};
 const UINT8 anim_beat_nuc[]       = {1, 2};
+const UINT8 anim_barrier_nuc[]    = {2, 6, 7};
 
 typedef enum  {
 	PLAYER_STATE_NUCLEAR,
@@ -32,7 +33,6 @@ INT8 tile_collision_nuc_y; //to check if we are touching a tile
 INT8 stop_nuc_r;
 INT8 stop_nuc_l;
 INT16 player_nuc_accel_y; // y acceleration
-
 
 extern PLAYER_MODE current_mode;
 extern PLAYER_MODE previous_mode;
@@ -64,6 +64,9 @@ void MovePlayerNuc() {
 	}
 
 	tile_collision_nuc_y = TranslateSprite(THIS, 0, player_nuc_accel_y >> 4);
+
+
+
 
 }
 
@@ -100,6 +103,13 @@ void UpdateWalkNuc() {
 	}
 }
 
+void UpdateBarrierNuc() {
+
+	if(KEY_TICKED(J_DOWN)) {
+		SetSpriteAnim(THIS, anim_barrier_nuc, 3u);
+	}
+}
+
 void UpdateBeat(){
 
 	if (KEY_PRESSED(J_A)){
@@ -129,6 +139,7 @@ void UPDATE() {
 	}
 
 	UpdateBeat();
+	UpdateBarrierNuc();
 	MovePlayerNuc();
 	CheckGrounded();
 	CheckNormal();

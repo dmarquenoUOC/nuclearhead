@@ -10,6 +10,7 @@ IMPORT_MAP(story_map);
 UINT16 scroll_counter;
 UINT16 bkg_x;
 UINT16 bkg_y;
+UINT8 ix;
 
 
 void START() {

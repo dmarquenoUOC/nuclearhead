@@ -155,7 +155,7 @@ void checkGorundedN(){
 
 void CheckNuclear(){
 
-	if((KEY_PRESSED(J_B) || KEY_TICKED(J_B)) &&  player_state==PLAYER_STATE_NORMAL){
+	if(KEY_PRESSED(J_B)  &&  player_state==PLAYER_STATE_NORMAL){
 		current_mode=NUCLEAR_MODE;
 		previous_mode=NORMAL_MODE;
 	}	 
@@ -170,6 +170,7 @@ void UPDATE() {
 	switch(player_state){
 		case(PLAYER_STATE_NORMAL):
 			UpdateWalk();
+			CheckNuclear();
 		break;
 		case (PLAYER_STATE_JUMPING):
 			SetSpriteAnim(THIS, anim_jump, 33u);
@@ -182,7 +183,6 @@ void UPDATE() {
 	MovePlayer();
 	updateAcceleration();
 	checkGorundedN();
-	CheckNuclear();
 
 	//Check Sprites
 	SPRITEMANAGER_ITERATE(i, spr) {
@@ -204,6 +204,8 @@ void UPDATE() {
         }
 
 	}
+
+	
 
 }
 

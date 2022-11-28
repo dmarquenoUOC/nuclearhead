@@ -1,7 +1,7 @@
 #include "ZGBMain.h"
 #include "Math.h"
 
-UINT8 next_state = StateMenu;
+UINT8 next_state = StateEngine;
 
 UINT8 GetTileReplacement(UINT8* tile_ptr, UINT8* tile) {
 
