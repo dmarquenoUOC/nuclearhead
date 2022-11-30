@@ -7,9 +7,10 @@
 #include "BankManager.h"
 #include "Print.h"
 
+IMPORT_TILES(blackfont);
 IMPORT_MAP(stage_0_1);
 IMPORT_MAP(stage_0_1_tileset);
-IMPORT_TILES(font);
+IMPORT_MAP(hud);
 
 const UINT8 collision_tiles_1[] = {4, 5, 7, 8, 16,17,18,19,20,21,41,42,43,50,51,53,0};
 extern INT16 last_sprite_loaded;
@@ -22,6 +23,12 @@ typedef enum  {
 
 PLAYER_MODE current_mode;
 PLAYER_MODE previous_mode;
+UINT8 player_health;
+UINT8 MAX_HEALTH=3u;
+
+// time of state
+UINT8 ticks; //next frame will update the value
+UINT16 countdown; 
 
 UINT16 x_tmp;
 UINT16 y_tmp;
@@ -29,16 +36,35 @@ MirroMode mirror_tmp;
 
 void START() {
 
-	INIT_FONT(font, PRINT_BKG);
-	//PRINT_POS(6, 13);
-	//Printf("STAGE %d", (UINT16)last_sprite_loaded);
+	INIT_FONT(blackfont, PRINT_WIN);
 	
 	last_sprite_loaded=104;
 	scroll_target = SpriteManagerAdd(SpritePlayer, 8, 96);
 	InitScroll(BANK(stage_0_1), &stage_0_1, collision_tiles_1, 0);
 	current_mode=NORMAL_MODE;
 	previous_mode=NORMAL_MODE;
+	player_health=MAX_HEALTH;
+	ticks=59;
+	countdown=300;
+
+	//Init Hud 
+	INIT_HUD(hud);
 	
+}
+
+void updateTime(){
+
+	ticks++;
+	if(ticks == 60) {
+		ticks = 0;
+		countdown--;
+		PRINT_POS(17, 0);
+		Printf("%d", countdown);
+		if (countdown==0){
+			//Time up!
+			SetState(StateMenu);
+		}
+	}
 }
 
 void UPDATE() {
@@ -80,7 +106,7 @@ void UPDATE() {
 	    previous_mode=NORMAL_MODE;
 	}
 
-	
+	updateTime();
 	//PRINT_POS(6, 13);
 	//Printf("STAGE %d", (UINT16)spriteIdxs[SpritePlayer]);
 

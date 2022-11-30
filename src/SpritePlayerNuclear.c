@@ -37,6 +37,7 @@ INT16 player_nuc_accel_y; // y acceleration
 extern PLAYER_MODE current_mode;
 extern PLAYER_MODE previous_mode;
 extern UINT8 stone1status;
+extern UINT8 player_health;
 
 void START() {
 
@@ -64,9 +65,6 @@ void MovePlayerNuc() {
 	}
 
 	tile_collision_nuc_y = TranslateSprite(THIS, 0, player_nuc_accel_y >> 4);
-
-
-
 
 }
 

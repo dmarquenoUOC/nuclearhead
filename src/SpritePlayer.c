@@ -3,17 +3,20 @@
 #include "ZGBMain.h"
 #include "Keys.h"
 #include "SpriteManager.h"
+#include "Scroll.h"
 
 //PG animations
 const UINT8 anim_idle[]       = {2, 0, 1};
 const UINT8 anim_walk[]       = {4, 3, 4, 5, 4};
 const UINT8 anim_jump[]       = {1, 6};
 const UINT8 anim_fall[]       = {1, 7};
+const UINT8 anim_hit[]        = {1, 6};
 
 typedef enum  {
 	PLAYER_STATE_NORMAL,
 	PLAYER_STATE_JUMPING,
-	PLAYER_STATE_FALLING
+	PLAYER_STATE_FALLING,
+	PLAYER_STATE_HIT
 } PLAYER_STATE;
 
 typedef enum  {
@@ -34,8 +37,10 @@ INT8 tile_collision_y; //to check if we are touching a tile
 INT8 stop_r;
 INT8 stop_l;
 
+
 extern PLAYER_MODE current_mode;
 extern PLAYER_MODE previous_mode;
+extern UINT8 player_health;
 
 void START() {
 	SetSpriteAnim(THIS, anim_idle, 3u);
@@ -154,12 +159,20 @@ void checkGorundedN(){
 }
 
 void CheckNuclear(){
-
 	if(KEY_PRESSED(J_B)  &&  player_state==PLAYER_STATE_NORMAL){
 		current_mode=NUCLEAR_MODE;
 		previous_mode=NORMAL_MODE;
 	}	 
+}
 
+void Hit(){
+		player_health--;
+		player_state=PLAYER_STATE_HIT;		
+}
+
+void UpdateHudLife() {
+	for (UINT8 i = 0; i < 3; ++i)
+		UPDATE_HUD_TILE(1 + i, 0, i < player_health ? 1 : 2);
 }
 
 void UPDATE() {
@@ -177,6 +190,9 @@ void UPDATE() {
 		break;
 		case PLAYER_STATE_FALLING:
 			SetSpriteAnim(THIS, anim_fall, 33u);
+		break;
+		case PLAYER_STATE_HIT:
+			SetSpriteAnim(THIS, anim_hit, 10u);
 		break;
 	}
 
@@ -201,7 +217,12 @@ void UPDATE() {
 				stop_r=0; // move to right
 				stop_l=0; // move to left
 			} 
-        }
+        }else if (spr->type == SpriteMonkey || spr->type == SpriteCocoBullet){ //Check enemy collision
+			if(CheckCollision(THIS, spr)) {
+					Hit();
+					UpdateHudLife();
+			}
+		}
 
 	}
 
