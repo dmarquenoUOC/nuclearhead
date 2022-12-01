@@ -6,6 +6,7 @@ _STATE(StateEngine)\
 _STATE(StateMenu)\
 _STATE(StateStory)\
 _STATE(StateGame)\
+_STATE(StateGameOver)\
 STATE_DEF_END
 
 #define SPRITES \
