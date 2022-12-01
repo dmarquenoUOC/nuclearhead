@@ -30,7 +30,7 @@ void UPDATE() {
 	UINT8 x;
 
 	if(data->time_out > 50) {
-		if (DISTANCE(scroll_target->x, THIS->x) < 60u){
+		if (DISTANCE(scroll_target->x, THIS->x) < 80u){
 			data->time_out = 0;
 			x = ((scroll_target->x - THIS->x) & 0xF000) ? -1 : 1;
 

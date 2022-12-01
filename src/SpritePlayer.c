@@ -10,7 +10,7 @@ const UINT8 anim_idle[]       = {2, 0, 1};
 const UINT8 anim_walk[]       = {4, 3, 4, 5, 4};
 const UINT8 anim_jump[]       = {1, 6};
 const UINT8 anim_fall[]       = {1, 7};
-const UINT8 anim_hit[]        = {1, 6};
+const UINT8 anim_hit[]        = {1, 2};
 
 typedef enum  {
 	PLAYER_STATE_NORMAL,
@@ -36,6 +36,7 @@ INT8 tile_collision_x; //to check if we are touching a tile
 INT8 tile_collision_y; //to check if we are touching a tile
 INT8 stop_r;
 INT8 stop_l;
+INT8 damage_recoil;
 
 
 extern PLAYER_MODE current_mode;
@@ -46,6 +47,7 @@ void START() {
 	SetSpriteAnim(THIS, anim_idle, 3u);
 	player_state=PLAYER_STATE_NORMAL;
 	player_accel_y = 0;
+	damage_recoil=0;
 	current_mode=NORMAL_MODE;
 	previous_mode=NORMAL_MODE;
 	stop_r=0;
@@ -59,10 +61,11 @@ void START() {
 void MovePlayer() {
 
 	if (!(KEY_PRESSED(J_B))) {
-		if(KEY_PRESSED(J_RIGHT) && stop_r==0) {
+
+		if(KEY_PRESSED(J_RIGHT) && stop_r==0 && player_state!=PLAYER_STATE_HIT) {
 			tile_collision_x = TranslateSprite(THIS, 1 << delta_time, 0);
 			THIS->mirror = NO_MIRROR;
-		} else if(KEY_PRESSED(J_LEFT) && stop_l==0) {
+		} else if(KEY_PRESSED(J_LEFT) && stop_l==0 && player_state!=PLAYER_STATE_HIT) {
 			tile_collision_x = TranslateSprite(THIS, -1 << delta_time, 0);
 			THIS->mirror = V_MIRROR;
 		}
@@ -167,12 +170,28 @@ void CheckNuclear(){
 
 void Hit(){
 		player_health--;
-		player_state=PLAYER_STATE_HIT;		
+		player_state=PLAYER_STATE_HIT;
+		SetSpriteAnim(THIS, anim_hit, 10u);		
 }
 
 void UpdateHudLife() {
 	for (UINT8 i = 0; i < 3; ++i)
-		UPDATE_HUD_TILE(1 + i, 0, i < player_health ? 1 : 2);
+		UPDATE_HUD_TILE(1 + i, 0, i < player_health ? 1 : 2);	
+}
+
+void UpdateHit(){
+
+	if (damage_recoil==5){
+		damage_recoil=0;
+		player_state=PLAYER_STATE_NORMAL;
+	}else{
+		if(THIS->mirror==V_MIRROR) {
+			tile_collision_x = TranslateSprite(THIS, 3 << delta_time, 0);
+		} else{
+			tile_collision_x = TranslateSprite(THIS, -3 << delta_time, 0);
+		}
+	}
+	damage_recoil++; 			
 }
 
 void UPDATE() {
@@ -192,7 +211,7 @@ void UPDATE() {
 			SetSpriteAnim(THIS, anim_fall, 33u);
 		break;
 		case PLAYER_STATE_HIT:
-			SetSpriteAnim(THIS, anim_hit, 10u);
+			 UpdateHit();
 		break;
 	}
 

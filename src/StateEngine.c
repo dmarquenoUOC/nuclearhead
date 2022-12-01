@@ -16,8 +16,7 @@ void START() {
 void UPDATE() {
 	n_frames ++;
 
-	if(n_frames == 100 || KEY_TICKED(J_START)) {
-	//if(KEY_TICKED(J_START)) {
+	if(n_frames == 100 || KEY_TICKED(J_START) || KEY_TICKED(J_A) || KEY_TICKED(J_B)) {
     	SetState(StateMenu);
 	}
 }

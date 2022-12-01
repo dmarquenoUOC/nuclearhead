@@ -12,7 +12,7 @@ IMPORT_MAP(stage_0_1);
 IMPORT_MAP(stage_0_1_tileset);
 IMPORT_MAP(hud);
 
-const UINT8 collision_tiles_1[] = {4, 5, 7, 8, 16,17,18,19,20,21,41,42,43,50,51,53,0};
+const UINT8 collision_tiles_1[] = {4, 5, 7, 8, 16,17,18,19,20,21,50,51,53,58,0};
 extern INT16 last_sprite_loaded;
 INT16 last_sprite_loaded_tmp;
 
@@ -24,7 +24,7 @@ typedef enum  {
 PLAYER_MODE current_mode;
 PLAYER_MODE previous_mode;
 UINT8 player_health;
-UINT8 MAX_HEALTH=3u;
+UINT8 MAX_HEALTH=3;
 
 // time of state
 UINT8 ticks; //next frame will update the value
@@ -36,8 +36,6 @@ MirroMode mirror_tmp;
 
 void START() {
 
-	INIT_FONT(blackfont, PRINT_WIN);
-	
 	last_sprite_loaded=104;
 	scroll_target = SpriteManagerAdd(SpritePlayer, 8, 96);
 	InitScroll(BANK(stage_0_1), &stage_0_1, collision_tiles_1, 0);
@@ -49,6 +47,7 @@ void START() {
 
 	//Init Hud 
 	INIT_HUD(hud);
+	INIT_FONT(blackfont, PRINT_WIN);
 	
 }
 
@@ -62,9 +61,26 @@ void updateTime(){
 		Printf("%d", countdown);
 		if (countdown==0){
 			//Time up!
-			SetState(StateMenu);
+			playerDead();
 		}
 	}
+}
+
+void checkHealth(){
+	if (player_health==0){
+			playerDead();
+		}
+}
+
+void playerDead(){
+
+	SpriteManagerRemoveSprite(scroll_target);
+	scroll_target = 0;
+	CreatePParticle(THIS->x, THIS->y,  1,  1);
+	CreatePParticle(THIS->x, THIS->y,  1, -1);
+	CreatePParticle(THIS->x, THIS->y, -1,  1);
+	CreatePParticle(THIS->x, THIS->y, -1, -1);
+	SetState(StateGameOver);
 }
 
 void UPDATE() {
@@ -107,7 +123,6 @@ void UPDATE() {
 	}
 
 	updateTime();
-	//PRINT_POS(6, 13);
-	//Printf("STAGE %d", (UINT16)spriteIdxs[SpritePlayer]);
+	checkHealth();
 
 }
