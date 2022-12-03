@@ -6,12 +6,14 @@
 #include "Sprite.h"
 #include "BankManager.h"
 #include "Print.h"
+#include "Music.h"
 
 IMPORT_TILES(blackfont);
 IMPORT_MAP(stage_0_1);
 IMPORT_MAP(stage_0_1_tileset);
 IMPORT_MAP(hud);
 IMPORT_MAP(hud_off);
+DECLARE_MUSIC(stage0);
 
 
 struct MapInfoBanked {
@@ -101,6 +103,8 @@ void START() {
 	//Init Hud 
 	INIT_HUD(hud);
 	INIT_FONT(blackfont, PRINT_WIN);
+
+	PlayMusic(stage0, 1);
 	
 }
 
@@ -234,7 +238,7 @@ void checkDoor(){
 		open[current_stage]=open_door;
 
 		if(n_frames==25){
-			INIT_HUD(hud_off);
+			//INIT_HUD(hud_off);
 			SetState(StateWillContinue);
 		}
 
