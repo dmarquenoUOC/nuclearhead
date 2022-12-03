@@ -3,6 +3,7 @@
 #include "ZGBMain.h"
 #include "Keys.h"
 #include "SpriteManager.h"
+#include "Scroll.h"
 
 //PG animations
 const UINT8 anim_idle_nuc[]       = {2, 0, 1};
@@ -38,6 +39,9 @@ extern PLAYER_MODE current_mode;
 extern PLAYER_MODE previous_mode;
 extern UINT8 stone1status;
 extern UINT8 player_health;
+extern UINT8 player_dead;
+extern BYTE key_stage;
+extern BYTE open_door;
 
 void START() {
 
@@ -50,6 +54,16 @@ void START() {
 		move_nuc_state=INAIR;
 	}else move_nuc_state=GROUNDED;
 
+}
+
+void CheckCollisionTileNuc() {
+	switch(tile_collision_nuc_x) {
+		case 58u:
+			if (key_stage){
+				open_door=1;
+			}
+			break;
+	}
 }
 
 void MovePlayerNuc() {
@@ -87,6 +101,12 @@ void CheckGrounded(){ //Check if player is not in grounded
 	if (THIS->y<96){
 		move_nuc_state=INAIR;
 	}else move_nuc_state=GROUNDED;
+
+	if((INT16)THIS->y > (INT16)scroll_h) {
+		SpriteManagerRemoveSprite(scroll_target);
+		scroll_target = 0;
+		player_dead=1;
+	}
 
 }
 
@@ -139,6 +159,7 @@ void UPDATE() {
 	UpdateBeat();
 	UpdateBarrierNuc();
 	MovePlayerNuc();
+	CheckCollisionTileNuc();
 	CheckGrounded();
 	CheckNormal();
 
@@ -146,7 +167,7 @@ void UPDATE() {
 	SPRITEMANAGER_ITERATE(i, spr) {
 
 		//stop if touch Stone
-		if (spr->type == SpriteStone) {
+		if ((spr->type == SpriteStone || spr->type == SpriteMonkey)) {
             if (CheckCollision(THIS, spr)) {
 				if (KEY_PRESSED(J_RIGHT)){
 					stop_nuc_r=1; // stop to right
@@ -155,7 +176,11 @@ void UPDATE() {
 					stop_nuc_r=0; // move to right
 					stop_nuc_l=1; // stop to left
 				}else if (KEY_PRESSED(J_A)){
-					stone1status=1;
+					if (spr->type == SpriteStone){
+						stone1status=1;
+					}else{
+						SpriteManagerRemove(i);
+					}
 					stop_nuc_r=0; // move to right
 					stop_nuc_l=0; // move to left
 				}
@@ -163,10 +188,12 @@ void UPDATE() {
 				stop_nuc_r=0; // move to right
 				stop_nuc_l=0; // move to left
 			} 
-
-			
-        }
-
+        }else if (spr->type == SpriteKey){
+			if(CheckCollision(THIS, spr)) {
+				SpriteManagerRemove(i);
+				key_stage=1;
+			}
+		}
 	}
 
 }

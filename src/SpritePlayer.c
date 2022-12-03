@@ -5,6 +5,8 @@
 #include "SpriteManager.h"
 #include "Scroll.h"
 
+void CreatePParticle(UINT16 x, UINT16 y, INT8 vx, INT8 vy) BANKED;
+
 //PG animations
 const UINT8 anim_idle[]       = {2, 0, 1};
 const UINT8 anim_walk[]       = {4, 3, 4, 5, 4};
@@ -37,11 +39,19 @@ INT8 tile_collision_y; //to check if we are touching a tile
 INT8 stop_r;
 INT8 stop_l;
 INT8 damage_recoil;
+INT8 dead_frames;
+
 
 
 extern PLAYER_MODE current_mode;
 extern PLAYER_MODE previous_mode;
 extern UINT8 player_health;
+extern UINT8 player_dead;
+extern UINT16 nuclear_time;
+extern UINT16 nuclear_time_MAX;
+extern BYTE key_stage;
+extern BYTE open_door;
+
 
 void START() {
 	SetSpriteAnim(THIS, anim_idle, 3u);
@@ -52,9 +62,20 @@ void START() {
 	previous_mode=NORMAL_MODE;
 	stop_r=0;
 	stop_l=0;
+	dead_frames=0;
 	if (THIS->y<96){
 		move_state=INAIR;
 	}else move_state=GROUNDED;
+}
+
+void CheckCollisionTile() {
+	switch(tile_collision_x) {
+		case 58u:
+			if (key_stage){
+				open_door=1;
+			}
+			break;
+	}
 }
 
 
@@ -158,11 +179,30 @@ void checkGorundedN(){
 		move_state=INAIR;
 	}else move_state=GROUNDED;
 
+	if((INT16)THIS->y > (INT16)scroll_h) {
+		SpriteManagerRemoveSprite(scroll_target);
+		scroll_target = 0;
+		player_dead=1;
+	}
 
 }
 
+void playerDead(){
+
+	if (player_dead==0){
+		SpriteManagerRemoveSprite(scroll_target);
+		scroll_target = 0;
+		CreatePParticle(THIS->x, THIS->y,  1,  1);
+		CreatePParticle(THIS->x, THIS->y,  1, -1);
+		CreatePParticle(THIS->x, THIS->y, -1,  1);
+		CreatePParticle(THIS->x, THIS->y, -1, -1);
+		player_dead=1;
+	}
+}
+
 void CheckNuclear(){
-	if(KEY_PRESSED(J_B)  &&  player_state==PLAYER_STATE_NORMAL){
+
+	if(KEY_PRESSED(J_B)  &&  player_state==PLAYER_STATE_NORMAL && nuclear_time==nuclear_time_MAX){
 		current_mode=NUCLEAR_MODE;
 		previous_mode=NORMAL_MODE;
 	}	 
@@ -171,10 +211,12 @@ void CheckNuclear(){
 void Hit(){
 		player_health--;
 		player_state=PLAYER_STATE_HIT;
-		SetSpriteAnim(THIS, anim_hit, 10u);		
+		SetSpriteAnim(THIS, anim_hit, 10u);
+		
 }
 
 void UpdateHudLife() {
+	
 	for (UINT8 i = 0; i < 3; ++i)
 		UPDATE_HUD_TILE(1 + i, 0, i < player_health ? 1 : 2);	
 }
@@ -182,8 +224,14 @@ void UpdateHudLife() {
 void UpdateHit(){
 
 	if (damage_recoil==5){
+		
 		damage_recoil=0;
-		player_state=PLAYER_STATE_NORMAL;
+		if (player_health==0){		
+			playerDead();
+		}else{
+			player_state=PLAYER_STATE_NORMAL;
+		}
+
 	}else{
 		if(THIS->mirror==V_MIRROR) {
 			tile_collision_x = TranslateSprite(THIS, 3 << delta_time, 0);
@@ -191,7 +239,7 @@ void UpdateHit(){
 			tile_collision_x = TranslateSprite(THIS, -3 << delta_time, 0);
 		}
 	}
-	damage_recoil++; 			
+	damage_recoil++;
 }
 
 void UPDATE() {
@@ -216,6 +264,7 @@ void UPDATE() {
 	}
 
 	MovePlayer();
+	CheckCollisionTile();
 	updateAcceleration();
 	checkGorundedN();
 
@@ -236,10 +285,19 @@ void UPDATE() {
 				stop_r=0; // move to right
 				stop_l=0; // move to left
 			} 
-        }else if (spr->type == SpriteMonkey || spr->type == SpriteCocoBullet){ //Check enemy collision
+        }else if ((spr->type == SpriteMonkey || spr->type == SpriteCocoBullet) && player_dead==0){ //Check enemy collision
 			if(CheckCollision(THIS, spr)) {
+					if (player_health>3){
+						player_health=3;
+					}
 					Hit();
 					UpdateHudLife();
+
+			}
+		}else if (spr->type == SpriteKey){
+			if(CheckCollision(THIS, spr)) {
+				SpriteManagerRemove(i);
+				key_stage=1;
 			}
 		}
 
