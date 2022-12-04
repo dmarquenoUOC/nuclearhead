@@ -4,6 +4,7 @@
 #include "Keys.h"
 #include "SpriteManager.h"
 #include "Scroll.h"
+#include "Sounds.h"
 
 //PG animations
 const UINT8 anim_idle_nuc[]       = {2, 0, 1};
@@ -131,6 +132,7 @@ void UpdateBarrierNuc() {
 void UpdateBeat(){
 
 	if (KEY_PRESSED(J_A)){
+		PlayFx(FX_HIT);
 		SetSpriteAnim(THIS, anim_beat_nuc, 3u);
 	}
 
@@ -149,6 +151,7 @@ void UPDATE() {
 
 	UINT8 i;
     Sprite *spr;
+	Sprite* spr2;
 
 	switch(player_state_nuc){
 		case(PLAYER_STATE_NUCLEAR):
@@ -176,6 +179,7 @@ void UPDATE() {
 					stop_nuc_r=0; // move to right
 					stop_nuc_l=1; // stop to left
 				}else if (KEY_PRESSED(J_A)){
+					
 					if (spr->type == SpriteStone){
 						stone1status=1;
 					}else{
@@ -183,6 +187,7 @@ void UPDATE() {
 					}
 					stop_nuc_r=0; // move to right
 					stop_nuc_l=0; // move to left
+					spr2 = SpriteManagerAdd(SpriteHit, spr->x, spr->y);
 				}
             }else{
 				stop_nuc_r=0; // move to right

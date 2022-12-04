@@ -7,6 +7,7 @@
 #include "BankManager.h"
 #include "Print.h"
 #include "Music.h"
+#include "Sounds.h"
 
 IMPORT_TILES(blackfont);
 IMPORT_MAP(stage_0_1);
@@ -14,6 +15,7 @@ IMPORT_MAP(stage_0_1_tileset);
 IMPORT_MAP(hud);
 IMPORT_MAP(hud_off);
 DECLARE_MUSIC(stage0);
+DECLARE_MUSIC(nuclear);
 
 
 struct MapInfoBanked {
@@ -127,6 +129,8 @@ void checkPlayerMode(){
 		scroll_target->mirror=mirror_tmp;
 		current_mode=NUCLEAR_MODE;
 	    previous_mode=NUCLEAR_MODE;
+		gbt_stop();
+		PlayMusic(nuclear,0);
 
 	}else if (previous_mode==NUCLEAR_MODE && current_mode==NORMAL_MODE){
 		x_tmp=scroll_target->x;
@@ -145,6 +149,8 @@ void checkPlayerMode(){
 		scroll_target->mirror=mirror_tmp;
 		current_mode=NORMAL_MODE;
 	    previous_mode=NORMAL_MODE;
+		gbt_stop();
+		PlayMusic(stage0,0);
 	}
 
 }
@@ -227,6 +233,7 @@ void updateNuclearBar(){
 void checkLevelKey(){
 
 	if (key_stage){
+		PlayFx(FX_PICKUP);
 		UPDATE_HUD_TILE(12, 0, 17);
 	}
 
@@ -238,7 +245,6 @@ void checkDoor(){
 		open[current_stage]=open_door;
 
 		if(n_frames==25){
-			//INIT_HUD(hud_off);
 			SetState(StateWillContinue);
 		}
 

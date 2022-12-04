@@ -4,6 +4,7 @@
 #include "Keys.h"
 #include "SpriteManager.h"
 #include "Scroll.h"
+#include "Sounds.h"
 
 void CreatePParticle(UINT16 x, UINT16 y, INT8 vx, INT8 vy) BANKED;
 
@@ -108,6 +109,7 @@ void UpdateWalk() {
 
 	//Check Jumping
 	if(KEY_TICKED(J_A)){
+		PlayFx(FX_JUMP);
 		player_state=PLAYER_STATE_JUMPING;
 		player_accel_y = -35;
 	} 
@@ -209,6 +211,7 @@ void CheckNuclear(){
 }
 
 void Hit(){
+		PlayFx(FX_DAMAGE);
 		player_health--;
 		player_state=PLAYER_STATE_HIT;
 		SetSpriteAnim(THIS, anim_hit, 10u);

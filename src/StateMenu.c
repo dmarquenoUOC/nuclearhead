@@ -8,8 +8,10 @@
 
 IMPORT_MAP(title_nuc_map);
 DECLARE_MUSIC(Intro);
+extern UINT16 hud_map_offset;
 
 void START() {
+    hud_map_offset=0;
 	InitScroll(BANK(title_nuc_map), &title_nuc_map, 0, 0);
     PlayMusic(Intro, 1);
 }

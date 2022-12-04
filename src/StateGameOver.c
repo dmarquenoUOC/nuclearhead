@@ -9,10 +9,12 @@ DECLARE_MUSIC(gameover);
 IMPORT_MAP(game_over);
 
 static UINT8 n_frames_over;
+extern UINT16 hud_map_offset;
 
 void START() {
 	HIDE_WIN;
 	n_frames_over = 0;
+	hud_map_offset=0;
 	InitScroll(BANK(game_over), &game_over, 0, 0);
 	PlayMusic(gameover, 0);
 }

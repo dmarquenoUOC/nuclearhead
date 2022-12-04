@@ -11,10 +11,12 @@ UINT16 scroll_counter;
 UINT16 bkg_x;
 UINT16 bkg_y;
 UINT8 ix;
+extern UINT16 hud_map_offset;
 
 
 void START() {
 
+	hud_map_offset=0;
 	InitScroll(BANK(story_map), &story_map, 0, 0);
 	scroll_counter=0;
 	bkg_y=0;
