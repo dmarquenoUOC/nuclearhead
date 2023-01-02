@@ -10,6 +10,7 @@ DECLARE_MUSIC(end);
 extern UINT16 hud_map_offset;
 
 void START() {
+	HIDE_WIN;
 	hud_map_offset=0;
 	InitScroll(BANK(end_demo), &end_demo, 0, 0);
 	PlayMusic(end, 0);
