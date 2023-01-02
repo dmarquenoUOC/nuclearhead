@@ -13,7 +13,6 @@ IMPORT_TILES(blackfont);
 IMPORT_MAP(stage_0_1);
 IMPORT_MAP(stage_0_1_tileset);
 IMPORT_MAP(hud);
-IMPORT_MAP(hud_off);
 DECLARE_MUSIC(stage0);
 DECLARE_MUSIC(nuclear);
 
@@ -130,7 +129,7 @@ void checkPlayerMode(){
 		current_mode=NUCLEAR_MODE;
 	    previous_mode=NUCLEAR_MODE;
 		gbt_stop();
-		PlayMusic(nuclear,0);
+		PlayMusic(nuclear,1);
 
 	}else if (previous_mode==NUCLEAR_MODE && current_mode==NORMAL_MODE){
 		x_tmp=scroll_target->x;
@@ -150,7 +149,7 @@ void checkPlayerMode(){
 		current_mode=NORMAL_MODE;
 	    previous_mode=NORMAL_MODE;
 		gbt_stop();
-		PlayMusic(stage0,0);
+		PlayMusic(stage0,1);
 	}
 
 }
@@ -233,7 +232,7 @@ void updateNuclearBar(){
 void checkLevelKey(){
 
 	if (key_stage){
-		PlayFx(FX_PICKUP);
+		PlayFx(FX_OBJECT);
 		UPDATE_HUD_TILE(12, 0, 17);
 	}
 

@@ -3,8 +3,10 @@
 #include "ZGBMain.h"
 #include "Keys.h"
 #include "SpriteManager.h"
+#include "Sprite.h"
 #include "Scroll.h"
 #include "Sounds.h"
+#include "Print.h"
 
 void CreatePParticle(UINT16 x, UINT16 y, INT8 vx, INT8 vy) BANKED;
 
@@ -42,8 +44,6 @@ INT8 stop_l;
 INT8 damage_recoil;
 INT8 dead_frames;
 
-
-
 extern PLAYER_MODE current_mode;
 extern PLAYER_MODE previous_mode;
 extern UINT8 player_health;
@@ -77,8 +77,9 @@ void CheckCollisionTile() {
 			}
 			break;
 	}
-}
 
+
+}
 
 void MovePlayer() {
 
@@ -92,10 +93,9 @@ void MovePlayer() {
 			THIS->mirror = V_MIRROR;
 		}
 	}
-
+	
 	tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
 }
-
 
 void UpdateWalk() {
 
@@ -115,33 +115,26 @@ void UpdateWalk() {
 	} 
 
 	//Check falling
-	/*if ((player_accel_y >> 4) > 1) {
+	if ((player_accel_y >> 4) > 1) {
 		player_state = PLAYER_STATE_FALLING;
-	}*/
-	if (tile_collision_y=0) {
-		player_state = PLAYER_STATE_FALLING;
-	}
-
+	} 
 }
 
 void updateAcceleration(){
 	
-	if (player_accel_y < 35) { 
+	if (player_accel_y < 96) { 
         player_accel_y += 2;
-	}else if (KEY_PRESSED(J_A) && player_accel_y > -35) {
-    	player_accel_y -= 2;
 	}
 
 	//Check collision with floor or Top	
-	if (!tile_collision_y && delta_time != 0 && player_accel_y < 35)
+	if (!tile_collision_y && delta_time != 0 && player_accel_y < 96)
 	{ //Do another iteration if there is no collision
 		player_accel_y += 2;
 		tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
 	}
-	if (tile_collision_y!=0){
 
+	if (tile_collision_y){
 		player_accel_y = 0;
-
 		if (player_state == PLAYER_STATE_JUMPING)
 		{
 			player_state = PLAYER_STATE_FALLING;
@@ -158,7 +151,6 @@ void updateAcceleration(){
 		}
 	}
 
-	
 }
 
 void checkGorundedN(){
@@ -166,14 +158,10 @@ void checkGorundedN(){
 	//Check collision with floor
 	if (player_state == PLAYER_STATE_NORMAL){
 		
-		if (move_state==INAIR && player_accel_y < 35)
+		if (move_state==INAIR && player_accel_y < 96)
 		{ //Do another iteration if there is no collision
-			//player_accel_y += 2;
+			player_accel_y += 2;
 			tile_collision_y = TranslateSprite(THIS, 0, player_accel_y >> 4);
-		}
-		if (tile_collision_y!=0){
-			player_accel_y = 0;
-			move_state==GROUNDED;
 		}
 	}
 
@@ -194,6 +182,7 @@ void playerDead(){
 	if (player_dead==0){
 		SpriteManagerRemoveSprite(scroll_target);
 		scroll_target = 0;
+		PlayFx(FX_DEAD,0);
 		CreatePParticle(THIS->x, THIS->y,  1,  1);
 		CreatePParticle(THIS->x, THIS->y,  1, -1);
 		CreatePParticle(THIS->x, THIS->y, -1,  1);
@@ -305,8 +294,6 @@ void UPDATE() {
 		}
 
 	}
-
-	
 
 }
 
