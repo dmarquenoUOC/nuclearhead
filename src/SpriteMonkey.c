@@ -8,7 +8,7 @@
 void CreateCocoBullet(UINT16 x, UINT16 y, INT8 vx, INT8 vy) BANKED;
 
 //PG animations
-const UINT8 anim_idle_monkey[]= {2, 1, 2};
+const UINT8 anim_idle_monkey[]= {2, 0, 1};
 const UINT8 anim_attack_monkey[]= {4, 2, 3, 4, 0, 0};
 
 extern Sprite* scroll_target;
