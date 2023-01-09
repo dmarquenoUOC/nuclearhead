@@ -21,6 +21,7 @@ _SPRITE_DMG(SpritePlayerParticle, playerParticle)\
 _SPRITE_DMG(SpriteKey, key_tileset)\
 _SPRITE_DMG(SpriteHit, hit_tileset)\
 _SPRITE_DMG(SpriteWildPig, EnemyWildPig_tileset)\
+_SPRITE_DMG(SpriteGrass, grass_tileset)\
 SPRITE_DEF_END
 
 #include "ZGBMain_Init.h"

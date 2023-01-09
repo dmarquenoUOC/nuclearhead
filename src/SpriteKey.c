@@ -5,7 +5,7 @@
 #include "ZGBMain.h"
 
 //PG animations
-const UINT8 anim_idle_key[]= {1, 1};
+const UINT8 anim_idle_key[]= {1, 0};
 extern BYTE key_stage;
 
 void START() {

@@ -277,7 +277,7 @@ void UPDATE() {
 				stop_r=0; // move to right
 				stop_l=0; // move to left
 			} 
-        }else if ((spr->type == SpriteMonkey || spr->type == SpriteCocoBullet) && player_dead==0){ //Check enemy collision
+        }else if ((spr->type == SpriteMonkey || spr->type == SpriteCocoBullet || spr->type == SpriteWildPig) && player_dead==0){ //Check enemy collision
 			if(CheckCollision(THIS, spr)) {
 					if (player_health>3){
 						player_health=3;

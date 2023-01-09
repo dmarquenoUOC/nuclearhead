@@ -20,6 +20,7 @@ typedef enum  {
 INT8 move;
 WILDPIG_STATE wildpig_state;
 INT8 tile_collision;
+INT8 air;
 
 void START() {
 	SetSpriteAnim(THIS, anim_idle_pig, 3u);
@@ -61,7 +62,11 @@ void finish_charge() {
 
 }
 
+
 void UPDATE() {
+	
+	UINT8 i;
+    Sprite *spr;
 
 	switch(wildpig_state){
 		case(WILDPIG_STATE_NORMAL):
@@ -71,6 +76,16 @@ void UPDATE() {
 		tile_collision=TranslateSprite(THIS, move, 0);
 		finish_charge();
 		break;
+	}
+
+	//Check Sprites
+	SPRITEMANAGER_ITERATE(i, spr) {
+		if (spr->type == SpriteStone || spr->type == SpriteGrass) {
+			if (CheckCollision(THIS, spr)) {
+				SetSpriteAnim(THIS, anim_idle_pig, 3u);
+				wildpig_state=WILDPIG_STATE_NORMAL;
+			}
+		}
 	}
 
 }
